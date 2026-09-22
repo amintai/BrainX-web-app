@@ -33,6 +33,11 @@ Backend app: `apps/api`
 - Agent orchestration in `apps/api/src/agents/`
 - All AI output must be structured JSON, validated with Zod before use
 
+### Deployment
+- Frontend: Vercel
+- Backend: Render / Railway / Cloud Run
+- Database / Platform: Supabase
+
 ### Testing
 - Vitest (frontend + backend)
 - React Testing Library (frontend component tests)
@@ -103,7 +108,7 @@ apps/api/src/
 - No SQL string interpolation — all database access via Supabase JS client or parameterized queries
 - All secrets via env vars; never committed to git
 - Maintain `.env.example` with all required variable names (no real values)
-- Every Express app must include: Helmet, CORS, express-rate-limit, Zod input validation, auth middleware, centralized error handling
+- Every Express app must include: Helmet, CORS, express-rate-limit, payload limits (`express.json({ limit: '1mb' })`), Zod input validation, auth middleware, centralized error handling
 - Never expose internal errors, stack traces, or credentials to the frontend
 - Never store passwords in plain text
 
