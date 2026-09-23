@@ -2,7 +2,6 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { configureStore } from '@reduxjs/toolkit';
 import authReducer from '../store/slices/authSlice';
 import OnboardingPage from '../pages/onboarding/OnboardingPage';
@@ -47,18 +46,12 @@ function makeStore() {
   });
 }
 
-let queryClient: QueryClient;
-
 function renderOnboarding() {
-  queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
-  vi.spyOn(queryClient, 'invalidateQueries');
   return render(
     <Provider store={makeStore()}>
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter>
-          <OnboardingPage />
-        </MemoryRouter>
-      </QueryClientProvider>
+      <MemoryRouter>
+        <OnboardingPage />
+      </MemoryRouter>
     </Provider>,
   );
 }
@@ -77,8 +70,8 @@ async function advanceToStep3() {
 
 describe('OnboardingPage', () => {
   beforeEach(() => {
-    mockGet.mockResolvedValue({ data: { success: true, data: { full_name: null } } });
-    mockPatch.mockResolvedValue({ data: { success: true, data: {} } });
+    mockGet.mockResolvedValue({ status: 200, data: { success: true, data: { full_name: null } } });
+    mockPatch.mockResolvedValue({ status: 200, data: { success: true, data: {} } });
     mockShowToastError.mockReset();
   });
 
@@ -90,6 +83,7 @@ describe('OnboardingPage', () => {
 
   it('pre-fills full name from profile when available', async () => {
     mockGet.mockResolvedValue({
+      status: 200,
       data: { success: true, data: { full_name: 'Existing Name' } },
     });
     renderOnboarding();
@@ -128,14 +122,12 @@ describe('OnboardingPage', () => {
     expect(screen.getByText(/all set/i)).toBeInTheDocument();
   });
 
-  it('invalidates ["profile", "me"] after complete so guard does not loop', async () => {
+  it('navigates to dashboard after complete so guard does not loop', async () => {
     renderOnboarding();
     await advanceToStep3();
     fireEvent.click(screen.getByRole('button', { name: /go to dashboard/i }));
     await waitFor(() =>
-      expect(queryClient.invalidateQueries).toHaveBeenCalledWith({
-        queryKey: ['profile', 'me'],
-      }),
+      expect(mockPatch).toHaveBeenCalledWith(expect.stringContaining('/onboarding/complete')),
     );
   });
 

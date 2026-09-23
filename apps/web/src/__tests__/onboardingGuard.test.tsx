@@ -2,13 +2,12 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { configureStore } from '@reduxjs/toolkit';
 import authReducer from '../store/slices/authSlice';
 
 vi.mock('../utils/client', () => ({
   default: {
-    get: vi.fn().mockResolvedValue({ data: { success: true, data: {} } }),
+    get: vi.fn().mockResolvedValue({ status: 200, data: { success: true, data: {} } }),
   },
   get: vi.fn(),
   post: vi.fn(),
@@ -34,12 +33,9 @@ function makeStore(user = authedUser) {
 }
 
 function wrap(ui: React.ReactNode, { initialPath = '/dashboard' } = {}) {
-  const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   return render(
     <Provider store={makeStore()}>
-      <QueryClientProvider client={qc}>
-        <MemoryRouter initialEntries={[initialPath]}>{ui}</MemoryRouter>
-      </QueryClientProvider>
+      <MemoryRouter initialEntries={[initialPath]}>{ui}</MemoryRouter>
     </Provider>,
   );
 }
@@ -57,6 +53,7 @@ describe('useOnboardingGuard', () => {
   it('returns without redirect when onboarding_completed_at is set', async () => {
     const client = (await import('../utils/client')).default;
     vi.mocked(client.get).mockResolvedValue({
+      status: 200,
       data: {
         success: true,
         data: { onboarding_completed_at: new Date().toISOString() },

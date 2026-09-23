@@ -1,10 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useQueryClient } from '@tanstack/react-query';
 import type { ApiSuccess, PaginatedResponse, Profile } from '@brainx/shared';
 import { ROLE_LABELS } from '@brainx/shared';
-import { useApiQuery } from '../../hooks/useApiQuery';
-import { useApiMutation } from '../../hooks/useApiMutation';
+import { useFetchAPI } from '../../hooks/useFetchAPI';
 import { useAppSelector, useAppDispatch } from '../../store/hooks';
 import { refreshUser } from '../../store/slices/authSlice';
 import client from '../../utils/client';
@@ -16,35 +14,43 @@ const PAGE_SIZE = 20;
 
 const UsersPage = () => {
   const [page, setPage] = useState(1);
-  const queryClient = useQueryClient();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const currentUserId = useAppSelector((state) => state.auth.user?.id);
 
-  const { data, isLoading } = useApiQuery<PaginatedResponse<Profile>>(['users', page], () =>
-    client
-      .get<ApiSuccess<PaginatedResponse<Profile>>>(
-        `${endpoints.users.list}?page=${page}&limit=${PAGE_SIZE}`,
-      )
-      .then((r) => r.data),
-  );
+  const { data, isLoading } = useFetchAPI<void, PaginatedResponse<Profile>>({
+    apiFunction: () =>
+      client
+        .get<ApiSuccess<PaginatedResponse<Profile>>>(
+          `${endpoints.users.list}?page=${page}&limit=${PAGE_SIZE}`,
+        )
+        .then((r) => ({ ...r, data: r.data.data })),
+    apiCallCondition: true,
+    dependencyArray: [page],
+  });
 
-  const roleMutation = useApiMutation<Profile, { userId: string; role: string }>(
-    ({ userId, role }) =>
-      client.patch<ApiSuccess<Profile>>(endpoints.users.role(userId), { role }).then((r) => r.data),
-    {
-      successMessage: 'Role updated',
-      errorMessage: 'Failed to update role',
-      onSuccess: async (_data, variables) => {
-        await queryClient.invalidateQueries({ queryKey: ['users'] });
-        if (variables.userId === currentUserId) {
-          await dispatch(refreshUser());
-          navigate(ROUTES.unauthorized);
-        }
-      },
-      onError: () => queryClient.invalidateQueries({ queryKey: ['users'] }),
+  const [rolePayload, setRolePayload] = useState<{ userId: string; role: string } | null>(null);
+  const { isLoading: isRolePending } = useFetchAPI<{ userId: string; role: string }, Profile>({
+    apiFunction: (params) =>
+      client
+        .patch<ApiSuccess<Profile>>(endpoints.users.role(params.userId), { role: params.role })
+        .then((r) => ({ ...r, data: r.data.data })),
+    apiCallCondition: !!rolePayload,
+    apiParams: rolePayload ?? undefined,
+    dependencyArray: [rolePayload],
+    showSuccessMessage: true,
+    successMessage: 'Role updated',
+    errorMessage: 'Failed to update role',
+    successCb: async () => {
+      const wasCurrentUser = rolePayload?.userId === currentUserId;
+      setRolePayload(null);
+      if (wasCurrentUser) {
+        await dispatch(refreshUser());
+        navigate(ROUTES.unauthorized);
+      }
     },
-  );
+    failureCb: () => setRolePayload(null),
+  });
 
   if (isLoading) {
     return <p className="text-gray-500">Loading users…</p>;
@@ -81,8 +87,8 @@ const UsersPage = () => {
                   <td className="px-4 py-3">
                     <select
                       value={u.role}
-                      disabled={roleMutation.isPending}
-                      onChange={(e) => roleMutation.mutate({ userId: u.id, role: e.target.value })}
+                      disabled={isRolePending}
+                      onChange={(e) => setRolePayload({ userId: u.id, role: e.target.value })}
                       className="rounded-md border border-gray-300 px-2 py-1 text-xs focus:outline-none focus:ring-2 focus:ring-brand-500 disabled:opacity-50"
                     >
                       {ROLES.map((r) => (

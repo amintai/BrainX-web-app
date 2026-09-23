@@ -1,5 +1,5 @@
 import { useAppSelector } from '../../store/hooks';
-import { useApiQuery } from '../../hooks/useApiQuery';
+import { useFetchAPI } from '../../hooks/useFetchAPI';
 import client from '../../utils/client';
 import { endpoints } from '../../utils/endpoints';
 import type { ApiSuccess } from '@brainx/shared';
@@ -18,11 +18,14 @@ const DashboardPage = () => {
   const user = useAppSelector((state) => state.auth.user);
   const isAdmin = user?.app_metadata?.role === ROLE_ADMIN;
 
-  const { data, isLoading, isError } = useApiQuery<StatsData>(
-    ['stats'],
-    () => client.get<ApiSuccess<StatsData>>(endpoints.stats.summary).then((r) => r.data),
-    { staleTime: 60_000, enabled: isAdmin },
-  );
+  const { data, isLoading, hasError } = useFetchAPI<void, StatsData>({
+    apiFunction: () =>
+      client
+        .get<ApiSuccess<StatsData>>(endpoints.stats.summary)
+        .then((r) => ({ ...r, data: r.data.data })),
+    apiCallCondition: isAdmin,
+    dependencyArray: [isAdmin],
+  });
 
   const cards = [
     {
@@ -33,15 +36,15 @@ const DashboardPage = () => {
     },
     {
       label: 'AI Runs',
-      value: 0, // TODO: wire to AI workflow run count
+      value: 0,
     },
     {
       label: 'Files Uploaded',
-      value: 0, // TODO: wire to Supabase Storage object count
+      value: 0,
     },
     {
       label: 'Active Today',
-      value: 0, // TODO: wire to session/event log
+      value: 0,
     },
   ];
 
@@ -58,7 +61,7 @@ const DashboardPage = () => {
         ))}
       </div>
 
-      {isAdmin && <RoleChart data={data} isLoading={isLoading} isError={isError} />}
+      {isAdmin && <RoleChart data={data} isLoading={isLoading} isError={hasError} />}
     </div>
   );
 };

@@ -1,8 +1,9 @@
+import { useState } from 'react';
 import { useFormik } from 'formik';
 import { z } from 'zod';
 import type { ApiSuccess, Profile } from '@brainx/shared';
 import { useAuth } from '../../hooks/useAuth';
-import { useApiMutation } from '../../hooks/useApiMutation';
+import { useFetchAPI } from '../../hooks/useFetchAPI';
 import client from '../../utils/client';
 import { endpoints } from '../../utils/endpoints';
 import AvatarUpload from '../../components/profile/AvatarUpload';
@@ -21,14 +22,24 @@ const getInitials = (name: string | null | undefined, email: string | undefined)
 
 const ProfilePage = () => {
   const { user, refresh } = useAuth();
+  const [profilePayload, setProfilePayload] = useState<ProfileFormValues | null>(null);
 
-  const mutation = useApiMutation<Profile, ProfileFormValues>(
-    (values) =>
+  const { isLoading: isSaving } = useFetchAPI<ProfileFormValues, Profile>({
+    apiFunction: (params) =>
       client
-        .patch<ApiSuccess<Profile>>(endpoints.auth.me, { full_name: values.full_name })
-        .then((r) => r.data),
-    { successMessage: 'Profile updated', onSuccess: () => refresh() },
-  );
+        .patch<ApiSuccess<Profile>>(endpoints.auth.me, { full_name: params.full_name })
+        .then((r) => ({ ...r, data: r.data.data })),
+    apiCallCondition: !!profilePayload,
+    apiParams: profilePayload ?? undefined,
+    dependencyArray: [profilePayload],
+    showSuccessMessage: true,
+    successMessage: 'Profile updated',
+    successCb: () => {
+      setProfilePayload(null);
+      refresh();
+    },
+    failureCb: () => setProfilePayload(null),
+  });
 
   const formik = useFormik<ProfileFormValues>({
     enableReinitialize: true,
@@ -40,7 +51,7 @@ const ProfilePage = () => {
       if (result.success) return {};
       return Object.fromEntries(result.error.errors.map((e) => [e.path[0], e.message]));
     },
-    onSubmit: (values) => mutation.mutate(values),
+    onSubmit: (values) => setProfilePayload(values),
   });
 
   const avatarUrl = user?.user_metadata?.avatar_url as string | null | undefined;
@@ -87,10 +98,10 @@ const ProfilePage = () => {
 
           <button
             type="submit"
-            disabled={mutation.isPending}
+            disabled={isSaving}
             className="rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700 disabled:opacity-60 transition-colors"
           >
-            {mutation.isPending ? 'Saving…' : 'Save changes'}
+            {isSaving ? 'Saving…' : 'Save changes'}
           </button>
         </form>
       </div>

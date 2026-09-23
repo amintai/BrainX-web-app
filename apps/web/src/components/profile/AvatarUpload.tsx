@@ -1,7 +1,6 @@
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { Camera } from 'lucide-react';
-import { useQueryClient } from '@tanstack/react-query';
-import { useApiMutation } from '../../hooks/useApiMutation';
+import { useFetchAPI } from '../../hooks/useFetchAPI';
 import { useAuth } from '../../hooks/useAuth';
 import { showToastError } from '../../utils/common';
 import client from '../../utils/client';
@@ -18,25 +17,28 @@ interface AvatarUploadProps {
 
 const AvatarUpload = ({ currentUrl, initials }: AvatarUploadProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
-  const queryClient = useQueryClient();
   const { refresh } = useAuth();
+  const [uploadData, setUploadData] = useState<FormData | null>(null);
 
-  const mutation = useApiMutation<Profile, FormData>(
-    (formData) =>
+  const { isLoading: isUploading } = useFetchAPI<FormData, Profile>({
+    apiFunction: (formData) =>
       client
         .post<ApiSuccess<Profile>>(endpoints.users.avatar, formData, {
           headers: { 'Content-Type': 'multipart/form-data' },
         })
-        .then((r) => r.data),
-    {
-      successMessage: 'Avatar updated',
-      errorMessage: 'Failed to upload avatar',
-      onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ['profile', 'me'] });
-        refresh();
-      },
+        .then((r) => ({ ...r, data: r.data.data })),
+    apiCallCondition: !!uploadData,
+    apiParams: uploadData ?? undefined,
+    dependencyArray: [uploadData],
+    showSuccessMessage: true,
+    successMessage: 'Avatar updated',
+    errorMessage: 'Failed to upload avatar',
+    successCb: () => {
+      setUploadData(null);
+      refresh();
     },
-  );
+    failureCb: () => setUploadData(null),
+  });
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -51,14 +53,14 @@ const AvatarUpload = ({ currentUrl, initials }: AvatarUploadProps) => {
     }
     const formData = new FormData();
     formData.append('avatar', file);
-    mutation.mutate(formData);
+    setUploadData(formData);
     e.target.value = '';
   };
 
   return (
     <button
       type="button"
-      onClick={() => !mutation.isPending && inputRef.current?.click()}
+      onClick={() => !isUploading && inputRef.current?.click()}
       className="group relative h-24 w-24 rounded-full overflow-hidden focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
       aria-label="Upload avatar"
     >
@@ -70,7 +72,7 @@ const AvatarUpload = ({ currentUrl, initials }: AvatarUploadProps) => {
         </div>
       )}
       <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity rounded-full">
-        {mutation.isPending ? (
+        {isUploading ? (
           <div className="h-6 w-6 animate-spin rounded-full border-2 border-white border-t-transparent" />
         ) : (
           <Camera size={20} className="text-white" />

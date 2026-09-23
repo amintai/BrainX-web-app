@@ -1,6 +1,5 @@
-import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useApiQuery } from './useApiQuery';
+import { useFetchAPI } from './useFetchAPI';
 import client from '../utils/client';
 import { endpoints } from '../utils/endpoints';
 import { ROUTES } from '../routes/routePaths';
@@ -13,15 +12,18 @@ interface ProfileMe {
 export const useOnboardingGuard = () => {
   const navigate = useNavigate();
 
-  const { data, isSuccess } = useApiQuery<ProfileMe>(
-    ['profile', 'me'],
-    () => client.get<ApiSuccess<ProfileMe>>(endpoints.auth.me).then((r) => r.data),
-    { staleTime: 30_000 },
-  );
-
-  useEffect(() => {
-    if (isSuccess && data?.onboarding_completed_at == null) {
-      navigate(ROUTES.onboarding, { replace: true });
-    }
-  }, [isSuccess, data, navigate]);
+  useFetchAPI<void, ProfileMe>({
+    apiFunction: () =>
+      client
+        .get<ApiSuccess<ProfileMe>>(endpoints.auth.me)
+        .then((r) => ({ ...r, data: r.data.data })),
+    apiCallCondition: true,
+    dependencyArray: [],
+    hideErrorMessage: true,
+    successCb: (data) => {
+      if (data?.onboarding_completed_at == null) {
+        navigate(ROUTES.onboarding, { replace: true });
+      }
+    },
+  });
 };

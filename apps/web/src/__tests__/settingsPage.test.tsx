@@ -2,7 +2,6 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { configureStore } from '@reduxjs/toolkit';
 import authReducer from '../store/slices/authSlice';
 import SettingsPage from '../pages/settings/SettingsPage';
@@ -67,12 +66,9 @@ function wrap(ui: React.ReactNode) {
       auth: { user: authedUser as never, status: 'authenticated' as never },
     },
   });
-  const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   return render(
     <Provider store={store}>
-      <QueryClientProvider client={qc}>
-        <MemoryRouter>{ui}</MemoryRouter>
-      </QueryClientProvider>
+      <MemoryRouter>{ui}</MemoryRouter>
     </Provider>,
   );
 }

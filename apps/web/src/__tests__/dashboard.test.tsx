@@ -2,7 +2,6 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { configureStore } from '@reduxjs/toolkit';
 import authReducer from '../store/slices/authSlice';
 import MetricCard from '../components/dashboard/MetricCard';
@@ -11,6 +10,7 @@ import DashboardPage from '../pages/dashboard/DashboardPage';
 vi.mock('../utils/client', () => ({
   default: {
     get: vi.fn().mockResolvedValue({
+      status: 200,
       data: {
         success: true,
         data: { userCount: 5, adminCount: 1, managerCount: 1, memberCount: 3 },
@@ -49,14 +49,11 @@ function makeStore(user: typeof memberUser | null) {
 }
 
 function renderDashboard(user: typeof memberUser | null) {
-  const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   return render(
     <Provider store={makeStore(user)}>
-      <QueryClientProvider client={qc}>
-        <MemoryRouter>
-          <DashboardPage />
-        </MemoryRouter>
-      </QueryClientProvider>
+      <MemoryRouter>
+        <DashboardPage />
+      </MemoryRouter>
     </Provider>,
   );
 }

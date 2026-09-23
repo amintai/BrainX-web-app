@@ -3,7 +3,6 @@ import { render, screen } from '@testing-library/react';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import authReducer from '../store/slices/authSlice';
 import PrivateRoute from '../routes/privateRoutes';
 
@@ -41,28 +40,25 @@ function makeStore(user: typeof memberUser | null, status: string) {
 }
 
 function renderWithRoute(store: ReturnType<typeof makeStore>, requiredRole?: string) {
-  const qc = new QueryClient();
   return render(
     <Provider store={store}>
-      <QueryClientProvider client={qc}>
-        <MemoryRouter initialEntries={['/protected']}>
-          <Routes>
-            <Route
-              path="/protected"
-              element={
-                <PrivateRoute requiredRole={requiredRole}>
-                  <div data-testid="protected-content">Protected</div>
-                </PrivateRoute>
-              }
-            />
-            <Route
-              path="/unauthorized"
-              element={<div data-testid="unauthorized">Unauthorized</div>}
-            />
-            <Route path="/" element={<div data-testid="login">Login</div>} />
-          </Routes>
-        </MemoryRouter>
-      </QueryClientProvider>
+      <MemoryRouter initialEntries={['/protected']}>
+        <Routes>
+          <Route
+            path="/protected"
+            element={
+              <PrivateRoute requiredRole={requiredRole}>
+                <div data-testid="protected-content">Protected</div>
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/unauthorized"
+            element={<div data-testid="unauthorized">Unauthorized</div>}
+          />
+          <Route path="/" element={<div data-testid="login">Login</div>} />
+        </Routes>
+      </MemoryRouter>
     </Provider>,
   );
 }

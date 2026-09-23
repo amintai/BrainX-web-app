@@ -1,11 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useQueryClient } from '@tanstack/react-query';
 import { ROUTES } from '../../routes/routePaths';
 import { endpoints } from '../../utils/endpoints';
 import client from '../../utils/client';
-import { useApiQuery } from '../../hooks/useApiQuery';
-import { useApiMutation } from '../../hooks/useApiMutation';
+import { useFetchAPI } from '../../hooks/useFetchAPI';
 import type { ApiSuccess } from '@brainx/shared';
 
 type Step = 1 | 2 | 3;
@@ -22,41 +20,46 @@ const features = [
 
 const OnboardingPage = () => {
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
   const [step, setStep] = useState<Step>(1);
   const [fullName, setFullName] = useState('');
 
-  const { data: profile } = useApiQuery<ProfileMe>(
-    ['profile', 'me'],
-    () => client.get<ApiSuccess<ProfileMe>>(endpoints.auth.me).then((r) => r.data),
-    { staleTime: 30_000 },
-  );
+  const { data: profile } = useFetchAPI<void, ProfileMe>({
+    apiFunction: () =>
+      client
+        .get<ApiSuccess<ProfileMe>>(endpoints.auth.me)
+        .then((r) => ({ ...r, data: r.data.data })),
+    apiCallCondition: true,
+    dependencyArray: [],
+    hideErrorMessage: true,
+  });
 
   useEffect(() => {
     if (profile?.full_name) setFullName(profile.full_name);
   }, [profile?.full_name]);
 
-  const saveNameMutation = useApiMutation(
-    () =>
+  const [saveTrigger, setSaveTrigger] = useState(0);
+  const { isLoading: isSaving } = useFetchAPI<void, void>({
+    apiFunction: () =>
       client
         .patch<ApiSuccess<void>>(endpoints.auth.me, { full_name: fullName })
-        .then((r) => r.data),
-    {
-      errorMessage: 'Failed to save your name. Please try again.',
-      onSuccess: () => setStep(2),
-    },
-  );
+        .then((r) => ({ ...r, data: undefined })),
+    apiCallCondition: saveTrigger > 0,
+    dependencyArray: [saveTrigger],
+    errorMessage: 'Failed to save your name. Please try again.',
+    successCb: () => setStep(2),
+  });
 
-  const completeMutation = useApiMutation(
-    () => client.patch<ApiSuccess<void>>(endpoints.onboarding.complete).then((r) => r.data),
-    {
-      errorMessage: 'Something went wrong. Please try again.',
-      onSuccess: async () => {
-        await queryClient.invalidateQueries({ queryKey: ['profile', 'me'] });
-        navigate(ROUTES.dashboard, { replace: true });
-      },
-    },
-  );
+  const [completeTrigger, setCompleteTrigger] = useState(0);
+  const { isLoading: isCompleting } = useFetchAPI<void, void>({
+    apiFunction: () =>
+      client
+        .patch<ApiSuccess<void>>(endpoints.onboarding.complete)
+        .then((r) => ({ ...r, data: undefined })),
+    apiCallCondition: completeTrigger > 0,
+    dependencyArray: [completeTrigger],
+    errorMessage: 'Something went wrong. Please try again.',
+    successCb: () => navigate(ROUTES.dashboard, { replace: true }),
+  });
 
   if (step === 1) {
     return (
@@ -79,11 +82,11 @@ const OnboardingPage = () => {
         />
 
         <button
-          onClick={() => saveNameMutation.mutate()}
-          disabled={!fullName.trim() || saveNameMutation.isPending}
+          onClick={() => setSaveTrigger((t) => t + 1)}
+          disabled={!fullName.trim() || isSaving}
           className="w-full rounded-lg bg-brand-600 px-4 py-2 text-sm font-semibold text-white disabled:opacity-50 hover:bg-brand-700 transition-colors"
         >
-          {saveNameMutation.isPending ? 'Saving…' : 'Next'}
+          {isSaving ? 'Saving…' : 'Next'}
         </button>
       </div>
     );
@@ -114,8 +117,8 @@ const OnboardingPage = () => {
           Next
         </button>
         <button
-          onClick={() => completeMutation.mutate()}
-          disabled={completeMutation.isPending}
+          onClick={() => setCompleteTrigger((t) => t + 1)}
+          disabled={isCompleting}
           className="mt-2 w-full text-center text-sm text-gray-400 hover:text-gray-600 disabled:opacity-50"
         >
           Skip
@@ -133,11 +136,11 @@ const OnboardingPage = () => {
       <p className="mb-8 text-sm text-gray-500">You're ready to start using BrainX.</p>
 
       <button
-        onClick={() => completeMutation.mutate()}
-        disabled={completeMutation.isPending}
+        onClick={() => setCompleteTrigger((t) => t + 1)}
+        disabled={isCompleting}
         className="w-full rounded-lg bg-brand-600 px-4 py-2 text-sm font-semibold text-white disabled:opacity-50 hover:bg-brand-700 transition-colors"
       >
-        {completeMutation.isPending ? 'Loading…' : 'Go to Dashboard'}
+        {isCompleting ? 'Loading…' : 'Go to Dashboard'}
       </button>
     </div>
   );

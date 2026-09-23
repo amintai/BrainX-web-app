@@ -2,13 +2,13 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { configureStore } from '@reduxjs/toolkit';
 import authReducer from '../store/slices/authSlice';
 import AvatarUpload from '../components/profile/AvatarUpload';
 
 const { mockPost, mockShowToastError, mockRefresh } = vi.hoisted(() => ({
   mockPost: vi.fn().mockResolvedValue({
+    status: 200,
     data: { success: true, data: { avatar_url: 'https://example.com/new.jpg' } },
   }),
   mockShowToastError: vi.fn(),
@@ -55,12 +55,9 @@ function wrap(ui: React.ReactNode) {
       },
     },
   });
-  const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   return render(
     <Provider store={store}>
-      <QueryClientProvider client={qc}>
-        <MemoryRouter>{ui}</MemoryRouter>
-      </QueryClientProvider>
+      <MemoryRouter>{ui}</MemoryRouter>
     </Provider>,
   );
 }
