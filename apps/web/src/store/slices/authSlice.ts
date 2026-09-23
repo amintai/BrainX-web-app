@@ -5,7 +5,7 @@ import { supabase } from '../../utils/supabase';
 
 export type AuthStatus = 'idle' | 'loading' | 'authenticated' | 'unauthenticated';
 
-interface AuthState {
+export interface AuthState {
   user: User | null;
   status: AuthStatus;
 }

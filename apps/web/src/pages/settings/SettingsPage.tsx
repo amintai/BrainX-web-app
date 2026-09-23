@@ -7,7 +7,7 @@ import { useAuth } from '../../hooks/useAuth';
 import { useTheme } from '../../hooks/useTheme';
 import { showToastSuccess, showToastError } from '../../utils/common';
 import { supabase } from '../../utils/supabase';
-import client from '../../utils/client';
+import { del } from '../../utils/client';
 import { endpoints } from '../../utils/endpoints';
 import { ROUTES } from '../../routes/routePaths';
 
@@ -52,7 +52,7 @@ const SettingsPage = () => {
   const handleDeleteAccount = async () => {
     setIsDeleting(true);
     try {
-      await client.del(endpoints.users.deleteMe);
+      await del(endpoints.users.deleteMe);
       await supabase.auth.signOut();
       navigate(ROUTES.login, { replace: true });
     } catch {

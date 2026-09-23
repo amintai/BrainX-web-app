@@ -21,8 +21,8 @@ vi.mock('../utils/client', () => ({
     patch: vi.fn(),
     post: vi.fn(),
     put: vi.fn(),
-    del: mockDel,
   },
+  del: mockDel,
 }));
 
 vi.mock('../utils/common', () => ({
