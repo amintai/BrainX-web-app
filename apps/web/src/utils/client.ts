@@ -1,4 +1,5 @@
-import axios, { AxiosRequestConfig } from 'axios';
+import axios from 'axios';
+import type { AxiosRequestConfig } from 'axios';
 import { supabase } from './supabase';
 import { getBaseURL, showToastError } from './common';
 
@@ -27,7 +28,9 @@ client.interceptors.response.use(
 
     if (error.response?.status === 401 && !original._retry) {
       original._retry = true;
-      const { data: { session } } = await supabase.auth.refreshSession();
+      const {
+        data: { session },
+      } = await supabase.auth.refreshSession();
       if (session?.access_token) {
         original.headers = {
           ...original.headers,
