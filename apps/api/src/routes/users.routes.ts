@@ -18,6 +18,7 @@ router.get('/me', UsersController.getMe);
 router.patch('/me', validate(updateProfileSchema), UsersController.updateMe);
 router.patch('/me/onboarding/complete', OnboardingController.completeOnboarding);
 router.post('/me/avatar', avatarUploadMiddleware, AvatarController.uploadAvatar);
+router.delete('/me', UsersController.deleteMe);
 
 // Admin only
 router.get(

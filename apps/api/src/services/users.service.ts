@@ -51,6 +51,11 @@ export const getUserById = async (userId: string): Promise<Profile> => {
   return data as Profile;
 };
 
+export const deleteAccount = async (userId: string): Promise<void> => {
+  const { error } = await supabaseAdmin.auth.admin.deleteUser(userId);
+  if (error) throw new AppError('Failed to delete account', 500, 'DELETE_FAILED');
+};
+
 export const updateUserRole = async (userId: string, role: string): Promise<Profile> => {
   const { error: authError } = await supabaseAdmin.auth.admin.updateUserById(userId, {
     app_metadata: { role },

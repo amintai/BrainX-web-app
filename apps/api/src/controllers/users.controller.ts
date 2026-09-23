@@ -55,3 +55,12 @@ export const updateUserRole = async (
     next(err);
   }
 };
+
+export const deleteMe = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    await UsersService.deleteAccount(req.user!.id);
+    res.status(204).send();
+  } catch (err) {
+    next(err);
+  }
+};
