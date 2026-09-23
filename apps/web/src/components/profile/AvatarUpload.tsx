@@ -2,6 +2,7 @@ import { useRef } from 'react';
 import { Camera } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useApiMutation } from '../../hooks/useApiMutation';
+import { useAuth } from '../../hooks/useAuth';
 import { showToastError } from '../../utils/common';
 import client from '../../utils/client';
 import { endpoints } from '../../utils/endpoints';
@@ -18,6 +19,7 @@ interface AvatarUploadProps {
 const AvatarUpload = ({ currentUrl, initials }: AvatarUploadProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const queryClient = useQueryClient();
+  const { refresh } = useAuth();
 
   const mutation = useApiMutation<Profile, FormData>(
     (formData) =>
@@ -29,7 +31,10 @@ const AvatarUpload = ({ currentUrl, initials }: AvatarUploadProps) => {
     {
       successMessage: 'Avatar updated',
       errorMessage: 'Failed to upload avatar',
-      onSuccess: () => queryClient.invalidateQueries({ queryKey: ['profile', 'me'] }),
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ['profile', 'me'] });
+        refresh();
+      },
     },
   );
 

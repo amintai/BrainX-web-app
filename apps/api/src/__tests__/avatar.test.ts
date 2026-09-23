@@ -91,7 +91,8 @@ describe('POST /api/v1/users/me/avatar', () => {
       data: { user: mockUser as never },
       error: null,
     });
-    vi.mocked(supabaseAdmin.storage.from).mockReturnValueOnce({
+    // Use mockReturnValue (not Once) so both storage.from() calls (upload + getPublicUrl) share the mock
+    vi.mocked(supabaseAdmin.storage.from).mockReturnValue({
       upload: vi.fn().mockResolvedValue({ data: { path: 'path' }, error: null }),
       getPublicUrl: vi.fn().mockReturnValue({ data: { publicUrl: mockProfile.avatar_url } }),
     } as never);
@@ -110,6 +111,11 @@ describe('POST /api/v1/users/me/avatar', () => {
     expect(res.status).toBe(200);
     expect(res.body.success).toBe(true);
     expect(res.body.data.avatar_url).toBe(mockProfile.avatar_url);
+    // user_metadata must be updated so Redux auth state reflects the new avatar immediately
+    expect(supabaseAdmin.auth.admin.updateUserById).toHaveBeenCalledWith(
+      mockUser.id,
+      expect.objectContaining({ user_metadata: { avatar_url: mockProfile.avatar_url } }),
+    );
   });
 
   it('returns 500 when Supabase Storage upload fails', async () => {

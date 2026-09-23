@@ -7,11 +7,12 @@ import { configureStore } from '@reduxjs/toolkit';
 import authReducer from '../store/slices/authSlice';
 import AvatarUpload from '../components/profile/AvatarUpload';
 
-const { mockPost, mockShowToastError } = vi.hoisted(() => ({
+const { mockPost, mockShowToastError, mockRefresh } = vi.hoisted(() => ({
   mockPost: vi.fn().mockResolvedValue({
     data: { success: true, data: { avatar_url: 'https://example.com/new.jpg' } },
   }),
   mockShowToastError: vi.fn(),
+  mockRefresh: vi.fn(),
 }));
 
 vi.mock('../utils/client', () => ({
@@ -31,6 +32,17 @@ vi.mock('../utils/common', () => ({
 
 vi.mock('../hooks/useOnboardingGuard', () => ({
   useOnboardingGuard: vi.fn(),
+}));
+
+vi.mock('../hooks/useAuth', () => ({
+  useAuth: () => ({
+    user: null,
+    status: 'authenticated',
+    isAuthenticated: true,
+    isLoading: false,
+    logout: vi.fn(),
+    refresh: mockRefresh,
+  }),
 }));
 
 function wrap(ui: React.ReactNode) {
@@ -94,5 +106,13 @@ describe('AvatarUpload', () => {
     expect(url).toContain('/users/me/avatar');
     expect(formData).toBeInstanceOf(FormData);
     expect(config?.headers?.['Content-Type']).toBe('multipart/form-data');
+  });
+
+  it('calls refresh() after a successful upload so Redux auth state reflects the new avatar', async () => {
+    wrap(<AvatarUpload currentUrl={null} initials="JD" />);
+    const input = document.querySelector('input[type="file"]') as HTMLInputElement;
+    const file = new File([new ArrayBuffer(100)], 'avatar.jpg', { type: 'image/jpeg' });
+    fireEvent.change(input, { target: { files: [file] } });
+    await waitFor(() => expect(mockRefresh).toHaveBeenCalled());
   });
 });

@@ -30,5 +30,11 @@ export const uploadAvatar = async (
     data: { publicUrl },
   } = supabaseAdmin.storage.from(BUCKET).getPublicUrl(storagePath);
 
+  // Update profiles table (source of truth) and auth user_metadata so
+  // the frontend's refreshUser() picks up the new avatar_url without a full re-login.
+  await supabaseAdmin.auth.admin.updateUserById(userId, {
+    user_metadata: { avatar_url: publicUrl },
+  });
+
   return updateProfile(userId, { avatar_url: publicUrl });
 };
