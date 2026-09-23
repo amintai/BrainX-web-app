@@ -112,6 +112,18 @@ brainx/
 └── CLAUDE.md         # AI assistant instructions
 ```
 
+## Hackathon tooling
+
+Three slash commands keep the team aligned to the judging criteria throughout hackathon day:
+
+| Command            | When                    | What it does                                                                            |
+| ------------------ | ----------------------- | --------------------------------------------------------------------------------------- |
+| `/hackathon-align` | Morning — before coding | Interactive 8-question session → alignment brief with projected scores + build priority |
+| `/hackathon-check` | Midday                  | Scores current repo state → RAG scorecard + time-weighted action list                   |
+| `/hackathon-demo`  | End of build phase      | Final score + 5-min timed demo script + per-criterion talking points + judge Q&A prep   |
+
+Output files land in `docs/hackathon/`. All three commands are backed by the **Hackathon Scorer** agent which reads the repo and scores all six criteria against observable evidence.
+
 ## Deployment
 
 | Service               | Platform                     |
