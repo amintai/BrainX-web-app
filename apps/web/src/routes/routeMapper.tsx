@@ -12,6 +12,7 @@ const DashboardPage = lazy(() => import('../pages/dashboard/DashboardPage'));
 const ProfilePage = lazy(() => import('../pages/profile/ProfilePage'));
 const UsersPage = lazy(() => import('../pages/users/UsersPage'));
 const OnboardingPage = lazy(() => import('../pages/onboarding/OnboardingPage'));
+const SettingsPage = lazy(() => import('../pages/settings/SettingsPage'));
 const NotFoundPage = lazy(() => import('../pages/NotFoundPage'));
 const UnauthorizedPage = lazy(() => import('../pages/UnauthorizedPage'));
 
@@ -47,6 +48,7 @@ export const PrivateRouteList: PrivateRouteConfig[] = [
   },
   { path: ROUTES.dashboard, component: DashboardPage, pageTitle: 'Dashboard', group: 'OVERVIEW' },
   { path: ROUTES.profile, component: ProfilePage, pageTitle: 'Profile', group: 'ACCOUNT' },
+  { path: ROUTES.settings, component: SettingsPage, pageTitle: 'Settings', group: 'ACCOUNT' },
   {
     path: ROUTES.users,
     component: UsersPage,

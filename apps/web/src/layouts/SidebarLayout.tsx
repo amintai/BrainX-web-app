@@ -1,6 +1,14 @@
 import { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, User, Users, ChevronLeft, ChevronRight, LogOut } from 'lucide-react';
+import {
+  LayoutDashboard,
+  User,
+  Users,
+  Settings,
+  ChevronLeft,
+  ChevronRight,
+  LogOut,
+} from 'lucide-react';
 import { ROUTES } from '../routes/routePaths';
 import { useAuth } from '../hooks/useAuth';
 import { useAppSelector } from '../store/hooks';
@@ -17,6 +25,7 @@ interface NavItem {
 const baseNavItems: NavItem[] = [
   { path: ROUTES.dashboard, label: 'Dashboard', icon: <LayoutDashboard size={18} /> },
   { path: ROUTES.profile, label: 'Profile', icon: <User size={18} /> },
+  { path: ROUTES.settings, label: 'Settings', icon: <Settings size={18} /> },
   { path: ROUTES.users, label: 'Users', icon: <Users size={18} />, adminOnly: true },
 ];
 
