@@ -33,8 +33,9 @@ const ResetPasswordPage = () => {
       setLoading(false);
 
       if (error) {
-        const msg = error.message.toLowerCase();
-        if (msg.includes('session') || msg.includes('expired') || msg.includes('missing')) {
+        const isSessionError =
+          error.name === 'AuthSessionMissingError' || error.status === 400 || error.status === 401;
+        if (isSessionError) {
           showToastError('This link has expired — request a new one');
           navigate(ROUTES.forgotPassword);
         } else {

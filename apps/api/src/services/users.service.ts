@@ -2,6 +2,7 @@ import { supabaseAdmin } from '../integrations/supabase';
 import { Profile, UpdateProfileDto } from '@brainx/shared';
 import { buildPaginatedResponse, toOffset } from '../utils/pagination';
 import { AppError } from '../middleware/error.middleware';
+import logger from '../utils/logger';
 
 export const getProfileById = async (userId: string): Promise<Profile> => {
   const { data, error } = await supabaseAdmin
@@ -63,6 +64,12 @@ export const updateUserRole = async (userId: string, role: string): Promise<Prof
     .select()
     .single();
 
-  if (error || !data) throw new AppError('Failed to update profile role', 500, 'UPDATE_FAILED');
+  if (error || !data) {
+    logger.error(
+      { userId, role, err: error },
+      'PARTIAL FAILURE: auth.app_metadata updated but profiles.role update failed — manual remediation required',
+    );
+    throw new AppError('Failed to update profile role', 500, 'UPDATE_FAILED');
+  }
   return data as Profile;
 };

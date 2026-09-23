@@ -1,5 +1,6 @@
 import { lazy } from 'react';
 import { ROUTES } from './routePaths';
+import { ROLE_ADMIN } from '@brainx/shared';
 
 const LoginPage = lazy(() => import('../pages/auth/LoginPage'));
 const SignupPage = lazy(() => import('../pages/auth/SignupPage'));
@@ -22,6 +23,7 @@ export interface PrivateRouteConfig {
   component: React.ComponentType;
   pageTitle: string;
   group?: string;
+  requiredRole?: string;
 }
 
 export const PublicRouteList: PublicRouteConfig[] = [
@@ -36,7 +38,13 @@ export const PublicRouteList: PublicRouteConfig[] = [
 export const PrivateRouteList: PrivateRouteConfig[] = [
   { path: ROUTES.dashboard, component: DashboardPage, pageTitle: 'Dashboard', group: 'OVERVIEW' },
   { path: ROUTES.profile, component: ProfilePage, pageTitle: 'Profile', group: 'ACCOUNT' },
-  { path: ROUTES.users, component: UsersPage, pageTitle: 'Users', group: 'ADMIN' },
+  {
+    path: ROUTES.users,
+    component: UsersPage,
+    pageTitle: 'Users',
+    group: 'ADMIN',
+    requiredRole: ROLE_ADMIN,
+  },
 ];
 
 export { NotFoundPage };

@@ -1,11 +1,15 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import type { ApiSuccess, PaginatedResponse, Profile } from '@brainx/shared';
 import { ROLE_LABELS } from '@brainx/shared';
 import { useApiQuery } from '../../hooks/useApiQuery';
 import { useApiMutation } from '../../hooks/useApiMutation';
+import { useAppSelector, useAppDispatch } from '../../store/hooks';
+import { refreshUser } from '../../store/slices/authSlice';
 import client from '../../utils/client';
 import { endpoints } from '../../utils/endpoints';
+import { ROUTES } from '../../routes/routePaths';
 
 const ROLES = ['member', 'manager', 'admin'] as const;
 const PAGE_SIZE = 20;
@@ -13,6 +17,9 @@ const PAGE_SIZE = 20;
 const UsersPage = () => {
   const [page, setPage] = useState(1);
   const queryClient = useQueryClient();
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const currentUserId = useAppSelector((state) => state.auth.user?.id);
 
   const { data, isLoading } = useApiQuery<PaginatedResponse<Profile>>(['users', page], () =>
     client
@@ -28,7 +35,14 @@ const UsersPage = () => {
     {
       successMessage: 'Role updated',
       errorMessage: 'Failed to update role',
-      onSuccess: () => queryClient.invalidateQueries({ queryKey: ['users'] }),
+      onSuccess: async (_data, variables) => {
+        await queryClient.invalidateQueries({ queryKey: ['users'] });
+        if (variables.userId === currentUserId) {
+          await dispatch(refreshUser());
+          navigate(ROUTES.unauthorized);
+        }
+      },
+      onError: () => queryClient.invalidateQueries({ queryKey: ['users'] }),
     },
   );
 
