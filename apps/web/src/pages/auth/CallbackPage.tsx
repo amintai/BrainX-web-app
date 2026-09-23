@@ -8,11 +8,22 @@ const CallbackPage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const type = params.get('type');
+
     supabase.auth.getSession().then(({ data: { session }, error }) => {
       if (error) {
         showToastError('Authentication failed. Please try again.');
         navigate(ROUTES.login);
-      } else if (session) {
+        return;
+      }
+
+      if (type === 'recovery' && session) {
+        navigate(ROUTES.resetPassword);
+        return;
+      }
+
+      if (session) {
         navigate(ROUTES.dashboard);
       } else {
         navigate(ROUTES.login);
