@@ -1,10 +1,11 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
 import { z } from 'zod';
 import { supabase } from '../../utils/supabase';
 import { showToastError } from '../../utils/common';
 import { ROUTES } from '../../routes/routePaths';
+import GoogleButton from '../../components/auth/GoogleButton';
 
 const loginSchema = z.object({
   email: z.string().email('Invalid email'),
@@ -20,9 +21,7 @@ const LoginPage = () => {
     validate: (values) => {
       const result = loginSchema.safeParse(values);
       if (result.success) return {};
-      return Object.fromEntries(
-        result.error.errors.map((e) => [e.path[0], e.message]),
-      );
+      return Object.fromEntries(result.error.errors.map((e) => [e.path[0], e.message]));
     },
     onSubmit: async (values) => {
       setLoading(true);
@@ -42,6 +41,15 @@ const LoginPage = () => {
   return (
     <div className="w-full max-w-sm rounded-2xl bg-white p-8 shadow-md">
       <h1 className="mb-6 text-2xl font-bold text-gray-900">Sign in to BrainX</h1>
+
+      <GoogleButton />
+
+      <div className="my-4 flex items-center gap-3">
+        <div className="flex-1 border-t border-gray-200" />
+        <span className="text-xs text-gray-400">or</span>
+        <div className="flex-1 border-t border-gray-200" />
+      </div>
+
       <form onSubmit={formik.handleSubmit} className="space-y-4">
         <div>
           <label className="mb-1 block text-sm font-medium text-gray-700" htmlFor="email">
@@ -59,9 +67,14 @@ const LoginPage = () => {
         </div>
 
         <div>
-          <label className="mb-1 block text-sm font-medium text-gray-700" htmlFor="password">
-            Password
-          </label>
+          <div className="mb-1 flex items-center justify-between">
+            <label className="text-sm font-medium text-gray-700" htmlFor="password">
+              Password
+            </label>
+            <Link to={ROUTES.forgotPassword} className="text-xs text-brand-600 hover:underline">
+              Forgot password?
+            </Link>
+          </div>
           <input
             id="password"
             type="password"
@@ -81,6 +94,13 @@ const LoginPage = () => {
           {loading ? 'Signing in…' : 'Sign in'}
         </button>
       </form>
+
+      <p className="mt-4 text-center text-sm text-gray-500">
+        Don&apos;t have an account?{' '}
+        <Link to={ROUTES.signup} className="text-brand-600 hover:underline">
+          Create one
+        </Link>
+      </p>
     </div>
   );
 };
