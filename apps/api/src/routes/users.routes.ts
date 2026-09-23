@@ -5,6 +5,7 @@ import { validate } from '../validators/validate';
 import { updateProfileSchema, updateRoleSchema } from '../validators/users.schema';
 import { paginationSchema } from '../validators/pagination.schema';
 import * as UsersController from '../controllers/users.controller';
+import * as OnboardingController from '../controllers/onboarding.controller';
 import { ROLE_ADMIN } from '@brainx/shared';
 
 const router = Router();
@@ -13,6 +14,7 @@ router.use(authenticate);
 
 router.get('/me', UsersController.getMe);
 router.patch('/me', validate(updateProfileSchema), UsersController.updateMe);
+router.patch('/me/onboarding/complete', OnboardingController.completeOnboarding);
 
 // Admin only
 router.get(

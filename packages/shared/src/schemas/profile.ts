@@ -6,6 +6,7 @@ export const profileSchema = z.object({
   full_name: z.string().nullable(),
   avatar_url: z.string().url().nullable(),
   role: z.enum(['admin', 'manager', 'member']).default('member'),
+  onboarding_completed_at: z.string().datetime().nullable().optional(),
   created_at: z.string().datetime(),
   updated_at: z.string().datetime(),
 });
