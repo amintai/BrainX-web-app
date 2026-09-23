@@ -1,6 +1,7 @@
 import { lazy } from 'react';
 import { ROUTES } from './routePaths';
 import { ROLE_ADMIN } from '@brainx/shared';
+import OnboardingLayout from '../layouts/OnboardingLayout';
 
 const LoginPage = lazy(() => import('../pages/auth/LoginPage'));
 const SignupPage = lazy(() => import('../pages/auth/SignupPage'));
@@ -10,6 +11,7 @@ const CallbackPage = lazy(() => import('../pages/auth/CallbackPage'));
 const DashboardPage = lazy(() => import('../pages/dashboard/DashboardPage'));
 const ProfilePage = lazy(() => import('../pages/profile/ProfilePage'));
 const UsersPage = lazy(() => import('../pages/users/UsersPage'));
+const OnboardingPage = lazy(() => import('../pages/onboarding/OnboardingPage'));
 const NotFoundPage = lazy(() => import('../pages/NotFoundPage'));
 const UnauthorizedPage = lazy(() => import('../pages/UnauthorizedPage'));
 
@@ -24,6 +26,7 @@ export interface PrivateRouteConfig {
   pageTitle: string;
   group?: string;
   requiredRole?: string;
+  layout?: React.ComponentType<{ children: React.ReactNode }>;
 }
 
 export const PublicRouteList: PublicRouteConfig[] = [
@@ -36,6 +39,12 @@ export const PublicRouteList: PublicRouteConfig[] = [
 ];
 
 export const PrivateRouteList: PrivateRouteConfig[] = [
+  {
+    path: ROUTES.onboarding,
+    component: OnboardingPage,
+    pageTitle: 'Get Started',
+    layout: OnboardingLayout,
+  },
   { path: ROUTES.dashboard, component: DashboardPage, pageTitle: 'Dashboard', group: 'OVERVIEW' },
   { path: ROUTES.profile, component: ProfilePage, pageTitle: 'Profile', group: 'ACCOUNT' },
   {

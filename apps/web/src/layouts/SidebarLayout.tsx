@@ -4,6 +4,7 @@ import { LayoutDashboard, User, Users, ChevronLeft, ChevronRight, LogOut } from 
 import { ROUTES } from '../routes/routePaths';
 import { useAuth } from '../hooks/useAuth';
 import { useAppSelector } from '../store/hooks';
+import { useOnboardingGuard } from '../hooks/useOnboardingGuard';
 import { ROLE_ADMIN } from '@brainx/shared';
 
 interface NavItem {
@@ -24,6 +25,7 @@ interface SidebarLayoutProps {
 }
 
 const SidebarLayout = ({ children }: SidebarLayoutProps) => {
+  useOnboardingGuard();
   const [collapsed, setCollapsed] = useState(false);
   const { user, logout } = useAuth();
   const navigate = useNavigate();

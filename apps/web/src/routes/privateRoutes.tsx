@@ -6,9 +6,14 @@ import SidebarLayout from '../layouts/SidebarLayout';
 interface PrivateRouteProps {
   children: React.ReactNode;
   requiredRole?: string;
+  layout?: React.ComponentType<{ children: React.ReactNode }>;
 }
 
-const PrivateRoute = ({ children, requiredRole }: PrivateRouteProps) => {
+const PrivateRoute = ({
+  children,
+  requiredRole,
+  layout: Layout = SidebarLayout,
+}: PrivateRouteProps) => {
   const status = useAppSelector((state) => state.auth.status);
   const role = useAppSelector((state) => state.auth.user?.app_metadata?.role as string | undefined);
   const location = useLocation();
@@ -25,7 +30,7 @@ const PrivateRoute = ({ children, requiredRole }: PrivateRouteProps) => {
     return <Navigate to={ROUTES.unauthorized} replace />;
   }
 
-  return <SidebarLayout>{children}</SidebarLayout>;
+  return <Layout>{children}</Layout>;
 };
 
 export default PrivateRoute;

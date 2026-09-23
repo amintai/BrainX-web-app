@@ -27,12 +27,12 @@ const RouteConfig = () => (
           />
         ))}
 
-        {PrivateRouteList.map(({ path, component: Component, requiredRole }) => (
+        {PrivateRouteList.map(({ path, component: Component, requiredRole, layout }) => (
           <Route
             key={path}
             path={path}
             element={
-              <PrivateRoute requiredRole={requiredRole}>
+              <PrivateRoute requiredRole={requiredRole} layout={layout}>
                 <Component />
               </PrivateRoute>
             }

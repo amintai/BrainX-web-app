@@ -8,4 +8,5 @@ export const ROUTES = {
   profile: '/profile',
   users: '/users',
   authCallback: '/auth/callback',
+  onboarding: '/onboarding',
 } as const;
