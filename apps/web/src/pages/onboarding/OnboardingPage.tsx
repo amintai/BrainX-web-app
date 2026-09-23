@@ -1,11 +1,18 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useMutation } from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
 import { ROUTES } from '../../routes/routePaths';
 import { endpoints } from '../../utils/endpoints';
 import client from '../../utils/client';
+import { useApiQuery } from '../../hooks/useApiQuery';
+import { useApiMutation } from '../../hooks/useApiMutation';
+import type { ApiSuccess } from '@brainx/shared';
 
 type Step = 1 | 2 | 3;
+
+interface ProfileMe {
+  full_name: string | null;
+}
 
 const features = [
   { title: 'AI Agents', description: 'Orchestrate intelligent agents for your workflows.' },
@@ -15,18 +22,41 @@ const features = [
 
 const OnboardingPage = () => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [step, setStep] = useState<Step>(1);
   const [fullName, setFullName] = useState('');
 
-  const saveNameMutation = useMutation({
-    mutationFn: () => client.patch(endpoints.auth.me, { full_name: fullName }),
-    onSuccess: () => setStep(2),
-  });
+  const { data: profile } = useApiQuery<ProfileMe>(
+    ['profile', 'me'],
+    () => client.get<ApiSuccess<ProfileMe>>(endpoints.auth.me).then((r) => r.data),
+    { staleTime: 30_000 },
+  );
 
-  const completeMutation = useMutation({
-    mutationFn: () => client.patch(endpoints.onboarding.complete),
-    onSuccess: () => navigate(ROUTES.dashboard, { replace: true }),
-  });
+  useEffect(() => {
+    if (profile?.full_name) setFullName(profile.full_name);
+  }, [profile?.full_name]);
+
+  const saveNameMutation = useApiMutation(
+    () =>
+      client
+        .patch<ApiSuccess<void>>(endpoints.auth.me, { full_name: fullName })
+        .then((r) => r.data),
+    {
+      errorMessage: 'Failed to save your name. Please try again.',
+      onSuccess: () => setStep(2),
+    },
+  );
+
+  const completeMutation = useApiMutation(
+    () => client.patch<ApiSuccess<void>>(endpoints.onboarding.complete).then((r) => r.data),
+    {
+      errorMessage: 'Something went wrong. Please try again.',
+      onSuccess: async () => {
+        await queryClient.invalidateQueries({ queryKey: ['profile', 'me'] });
+        navigate(ROUTES.dashboard, { replace: true });
+      },
+    },
+  );
 
   if (step === 1) {
     return (
@@ -84,8 +114,9 @@ const OnboardingPage = () => {
           Next
         </button>
         <button
-          onClick={() => setStep(3)}
-          className="mt-2 w-full text-center text-sm text-gray-400 hover:text-gray-600"
+          onClick={() => completeMutation.mutate()}
+          disabled={completeMutation.isPending}
+          className="mt-2 w-full text-center text-sm text-gray-400 hover:text-gray-600 disabled:opacity-50"
         >
           Skip
         </button>
