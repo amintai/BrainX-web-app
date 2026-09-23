@@ -43,6 +43,9 @@ importers:
       '@brainx/shared':
         specifier: workspace:*
         version: link:../../packages/shared
+      '@scalar/express-api-reference':
+        specifier: ^0.10.21
+        version: 0.10.21
       '@supabase/supabase-js':
         specifier: ^2.45.0
         version: 2.116.0
@@ -1381,6 +1384,48 @@ packages:
       }
     cpu: [x64]
     os: [win32]
+
+  '@scalar/client-side-rendering@0.4.3':
+    resolution:
+      {
+        integrity: sha512-a7Hs+YpaT3CEtJcx6pJS/1XMhV/cCGmheYrwuCd51LvrnJLluVqq7ID6F9xWqPnc7Y0E3vs6XZcz+h3exjUFdg==,
+      }
+    engines: { node: '>=22' }
+
+  '@scalar/express-api-reference@0.10.21':
+    resolution:
+      {
+        integrity: sha512-XweZPUd95oGAZsnCtaa7nPDjoDve1byQxvI8uyC8NclwyqndXIhXpNYmQsqpWoKFYYQV8DJaimuXg8BqiuVDbA==,
+      }
+    engines: { node: '>=22' }
+
+  '@scalar/helpers@0.13.0':
+    resolution:
+      {
+        integrity: sha512-1vB6AZXCQZPb+MApSrso6ss+rbLuiI/vGe+PmiXm8Cnt6B+10JeacDPoPr51EgSwltSfH2hZhJ7hHjW2pSg+bQ==,
+      }
+    engines: { node: '>=22' }
+
+  '@scalar/schemas@0.11.0':
+    resolution:
+      {
+        integrity: sha512-rtvZSsL7IFcHLB1j0VJIgW2MJ702NPOvlhRoRWU4gDK4rGDRmy58BzXtF7gbKOm8vA8aX24NIMr7itwc1Pp6AQ==,
+      }
+    engines: { node: '>=22' }
+
+  '@scalar/types@0.21.0':
+    resolution:
+      {
+        integrity: sha512-kl/GSKZ2DynaaP1LxnyXxopgoIYrtUI95cOeG3KYkdGJ6pEn3MJ6PDmWfRQNj3gH/ZRx2UuNIf3jVvtMNrlrKA==,
+      }
+    engines: { node: '>=22' }
+
+  '@scalar/validation@0.6.4':
+    resolution:
+      {
+        integrity: sha512-s93HFX0+N6bLwGjZPKFGVHq/gWiZy1YQkR2+dSflbUdYp+4j2Pg+WDA0gwbFrsOlgtkEjwQbjXtbmBiFTtPYUg==,
+      }
+    engines: { node: '>=20' }
 
   '@solid-primitives/event-listener@2.4.6':
     resolution:
@@ -3972,6 +4017,14 @@ packages:
     engines: { node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1 }
     hasBin: true
 
+  nanoid@5.1.16:
+    resolution:
+      {
+        integrity: sha512-kVrnsrJqMR8+oLJnGEmSWw9BivK5mt7H3FZatVRjrc5wGqFYuBxX1yG7+A7Gi5AefkX6t/oCkizcQgpu0cY1dQ==,
+      }
+    engines: { node: ^18 || >=20 }
+    hasBin: true
+
   natural-compare@1.4.0:
     resolution:
       {
@@ -5022,6 +5075,13 @@ packages:
         integrity: sha512-9QNk5KwDF+Bvz+PyObkmSYjI5ksVUYtjW7AU22r2NKcfLJcXp96hkDWU3+XndOsUb+AQ9QhfzfCT2O+CNWT5Tw==,
       }
 
+  tagged-tag@1.0.0:
+    resolution:
+      {
+        integrity: sha512-yEFYrVhod+hdNyx7g5Bnkkb0G6si8HJurOoOEgC8B/O0uXLHlaey/65KRv6cuWBNhBgHKAROVpc7QyYqE5gFng==,
+      }
+    engines: { node: '>=20' }
+
   tailwindcss@3.4.19:
     resolution:
       {
@@ -5190,6 +5250,13 @@ packages:
         integrity: sha512-XleUoc9uwGXqjWwXaUTZAmzMcFZ5858QA2vvx1Ur5xIcixXIP+8LnFDgRplU30us6teqdlskFfu+ae4K79Ooew==,
       }
     engines: { node: '>= 0.8.0' }
+
+  type-fest@5.10.0:
+    resolution:
+      {
+        integrity: sha512-NoSdpq/WEiAg5sjmBkmV/hfxv6HJH4NqPNrqjtSO5CwRmpsDfaf4begxW34KdJykH/l1yHtwBWQkCRdoXO8mPA==,
+      }
+    engines: { node: '>=20' }
 
   type-is@1.6.18:
     resolution:
@@ -5512,6 +5579,12 @@ packages:
     resolution:
       {
         integrity: sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ==,
+      }
+
+  zod@4.6.5:
+    resolution:
+      {
+        integrity: sha512-v5l/aFXZQeai4awLbOpSoHecE9UiMrnfx75tEXLjNonXVARxQ5mOeipTjROUchszUNCqnE+hqAMujRsRHsut2Q==,
       }
 
 snapshots:
@@ -6060,6 +6133,32 @@ snapshots:
 
   '@rollup/rollup-win32-x64-msvc@4.63.4':
     optional: true
+
+  '@scalar/client-side-rendering@0.4.3':
+    dependencies:
+      '@scalar/schemas': 0.11.0
+      '@scalar/types': 0.21.0
+      '@scalar/validation': 0.6.4
+
+  '@scalar/express-api-reference@0.10.21':
+    dependencies:
+      '@scalar/client-side-rendering': 0.4.3
+
+  '@scalar/helpers@0.13.0': {}
+
+  '@scalar/schemas@0.11.0':
+    dependencies:
+      '@scalar/helpers': 0.13.0
+      '@scalar/validation': 0.6.4
+
+  '@scalar/types@0.21.0':
+    dependencies:
+      '@scalar/helpers': 0.13.0
+      nanoid: 5.1.16
+      type-fest: 5.10.0
+      zod: 4.6.5
+
+  '@scalar/validation@0.6.4': {}
 
   '@solid-primitives/event-listener@2.4.6(solid-js@1.9.15)':
     dependencies:
@@ -7692,6 +7791,8 @@ snapshots:
 
   nanoid@3.3.19: {}
 
+  nanoid@5.1.16: {}
+
   natural-compare@1.4.0: {}
 
   negotiator@0.6.3: {}
@@ -8327,6 +8428,8 @@ snapshots:
 
   symbol-tree@3.2.4: {}
 
+  tagged-tag@1.0.0: {}
+
   tailwindcss@3.4.19(tsx@4.23.15)(yaml@2.9.1):
     dependencies:
       '@alloc/quick-lru': 5.3.0
@@ -8427,6 +8530,10 @@ snapshots:
   type-check@0.4.0:
     dependencies:
       prelude-ls: 1.2.1
+
+  type-fest@5.10.0:
+    dependencies:
+      tagged-tag: 1.0.0
 
   type-is@1.6.18:
     dependencies:
@@ -8668,3 +8775,5 @@ snapshots:
   yocto-queue@0.1.0: {}
 
   zod@3.25.76: {}
+
+  zod@4.6.5: {}

@@ -6,11 +6,13 @@ import rateLimit from 'express-rate-limit';
 import { pinoHttp } from 'pino-http';
 import cookieParser from 'cookie-parser';
 import { v4 as uuidv4 } from 'uuid';
+import { apiReference } from '@scalar/express-api-reference';
 import config from './config';
 import logger from './utils/logger';
 import { sendError } from './utils/response';
 import { errorHandler } from './middleware/error.middleware';
 import apiRoutes from './routes';
+import { openApiSpec } from './docs/openapi';
 
 const app = express();
 
@@ -41,7 +43,11 @@ const limiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   handler: (_req: Request, res: Response) => {
-    sendError(res, { code: 'TOO_MANY_REQUESTS', message: 'Too many requests, please try again later' }, 429);
+    sendError(
+      res,
+      { code: 'TOO_MANY_REQUESTS', message: 'Too many requests, please try again later' },
+      429,
+    );
   },
 });
 app.use(limiter);
@@ -75,6 +81,18 @@ app.use(cookieParser());
 app.get('/health', (_req: Request, res: Response) => {
   res.json({ success: true, data: { status: 'ok' } });
 });
+
+// API docs (all environments — disable in prod if needed)
+app.get('/openapi.json', (_req: Request, res: Response) => {
+  res.json(openApiSpec);
+});
+app.use(
+  '/docs',
+  apiReference({
+    spec: { url: '/openapi.json' },
+    theme: 'default',
+  }),
+);
 
 // API routes
 app.use('/api/v1', apiRoutes);
