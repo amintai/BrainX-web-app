@@ -42,7 +42,7 @@ const authSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(refreshUser.pending, (state) => {
-        state.status = 'loading';
+        if (state.status === 'idle') state.status = 'loading';
       })
       .addCase(refreshUser.fulfilled, (state, action) => {
         state.user = action.payload;

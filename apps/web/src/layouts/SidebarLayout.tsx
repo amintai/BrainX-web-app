@@ -10,8 +10,8 @@ import {
   LogOut,
 } from 'lucide-react';
 import { ROUTES } from '../routes/routePaths';
-import { useAuth } from '../hooks/useAuth';
-import { useAppSelector } from '../store/hooks';
+import { useAppSelector, useAppDispatch } from '../store/hooks';
+import { logoutUser } from '../store/slices/authSlice';
 import { useOnboardingGuard } from '../hooks/useOnboardingGuard';
 import { ROLE_ADMIN } from '@brainx/shared';
 
@@ -36,14 +36,15 @@ interface SidebarLayoutProps {
 const SidebarLayout = ({ children }: SidebarLayoutProps) => {
   useOnboardingGuard();
   const [collapsed, setCollapsed] = useState(false);
-  const { user, logout } = useAuth();
-  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const user = useAppSelector((state) => state.auth.user);
   const role = useAppSelector((state) => state.auth.user?.app_metadata?.role as string | undefined);
+  const navigate = useNavigate();
 
   const navItems = baseNavItems.filter((item) => !item.adminOnly || role === ROLE_ADMIN);
 
   const handleLogout = async () => {
-    await logout();
+    await dispatch(logoutUser());
     navigate(ROUTES.login);
   };
 
