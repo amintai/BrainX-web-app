@@ -32,7 +32,14 @@ vi.mock('../integrations/supabase', () => ({
       getUser: vi.fn().mockResolvedValue({ data: { user: null }, error: null }),
       admin: {
         updateUserById: vi.fn().mockResolvedValue({ data: { user: {} }, error: null }),
+        deleteUser: vi.fn().mockResolvedValue({ data: { user: {} }, error: null }),
       },
+    },
+    storage: {
+      from: vi.fn().mockReturnValue({
+        upload: vi.fn().mockResolvedValue({ data: { path: '' }, error: null }),
+        getPublicUrl: vi.fn().mockReturnValue({ data: { publicUrl: '' } }),
+      }),
     },
   },
 }));

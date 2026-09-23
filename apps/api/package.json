@@ -13,8 +13,8 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@brainx/shared": "workspace:*",
     "@anthropic-ai/sdk": "^0.36.0",
+    "@brainx/shared": "workspace:*",
     "@supabase/supabase-js": "^2.45.0",
     "bcryptjs": "^2.4.3",
     "compression": "^1.7.4",
@@ -24,6 +24,7 @@
     "express": "^4.19.2",
     "express-rate-limit": "^7.3.1",
     "helmet": "^7.1.0",
+    "multer": "^2.4.0",
     "openai": "^4.67.0",
     "pino": "^9.3.2",
     "pino-http": "^10.2.0",
@@ -37,6 +38,7 @@
     "@types/cookie-parser": "^1.4.7",
     "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",
+    "@types/multer": "^2.2.0",
     "@types/node": "^22.0.0",
     "@types/supertest": "^6.0.2",
     "@types/uuid": "^10.0.0",
