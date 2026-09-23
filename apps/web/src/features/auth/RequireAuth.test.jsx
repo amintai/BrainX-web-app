@@ -44,8 +44,8 @@ describe('LoginPage validation', () => {
 
     render(<LoginPage />);
 
-    const emailInput = screen.getByLabelText('Email');
-    const submitButton = screen.getByRole('button', { name: /log in/i });
+    const emailInput = screen.getByLabelText('Work Email');
+    const submitButton = screen.getByRole('button', { name: /enter brainx workspace/i });
 
     fireEvent.change(emailInput, { target: { value: 'not-an-email' } });
     fireEvent.blur(emailInput);

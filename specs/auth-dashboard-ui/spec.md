@@ -153,6 +153,11 @@ The boilerplate-setup feature wired Supabase Auth end-to-end but left the login 
       When the user clicks a page number or the next/previous control
       Then the table displays the rows belonging to that page, the current page control shows the active-page treatment, the previous control is disabled on the first page, and the "Showing X-Y of Z users" summary text updates to match the visible range.
 
+- [ ] **FR-026:** Authenticated users are redirected away from `/login`
+      Given a user with an active session
+      When they navigate (or are still on the page after) a successful sign-in at `/login`
+      Then they are redirected to `/` (dashboard) — this applies both immediately after a successful `signInWithPassword` call and to any already-authenticated visitor who lands on `/login` directly, via a guard route mirroring `RequireAuth`'s pattern.
+
 ## Out of scope
 
 - Real Google/Microsoft OAuth wiring for the login page's SSO buttons — they are decorative only in this feature.
@@ -170,7 +175,10 @@ The boilerplate-setup feature wired Supabase Auth end-to-end but left the login 
 
 ## Open questions
 
-All resolved by owner (deepti.jakhotra) 2026-09-23:
+All resolved by owner (deepti.jakhotra) 2026-09-23. Two further items surfaced during plan.md and resolved the same day:
+
+- **Login redirect gap (found during planning):** the spec initially had no requirement covering post-login navigation or redirecting an already-authenticated visitor away from `/login`. Resolved by adding FR-026.
+- **Brand name mismatch:** the Stitch designs use "Team BrainX" on the login screen and "Nexus Enterprise" on the dashboard/user-management screens. Resolved to follow Stitch exactly as designed (one `BRAND_LABEL` constant per screen) rather than unifying — can be revisited in one line later if this turns out to be a mistake in the source designs.
 
 - **Display name/role source:** accept the email-derived fallback (FR-015/FR-012 as written). No `/api/v1/me` contract change in this feature; a future feature can add `name`/`role` if a real need arises.
 - **Icon approach:** Material Symbols web-font, consistent with the Stitch export — no new icon-package dependency.
