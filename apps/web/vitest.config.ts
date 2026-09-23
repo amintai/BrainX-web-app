@@ -1,0 +1,25 @@
+import { defineConfig } from 'vitest/config';
+import react from '@vitejs/plugin-react';
+import path from 'path';
+
+export default defineConfig({
+  plugins: [react()],
+  test: {
+    globals: true,
+    environment: 'jsdom',
+    setupFiles: ['./src/__tests__/setup.ts'],
+    include: ['src/**/*.test.{ts,tsx}'],
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'lcov'],
+      exclude: ['src/__tests__/**', 'src/main.tsx', 'src/vite-env.d.ts'],
+      thresholds: { lines: 60, functions: 60 },
+    },
+  },
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, 'src'),
+      '@brainx/shared': path.resolve(__dirname, '../../packages/shared/src/index.ts'),
+    },
+  },
+});

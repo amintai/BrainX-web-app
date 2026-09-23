@@ -2,7 +2,7 @@
 
 ## Stack
 
-Language: JavaScript (no TypeScript)
+Language: TypeScript
 Monorepo: pnpm workspaces
 Frontend app: `apps/web`
 Backend app: `apps/api`
@@ -46,11 +46,13 @@ Backend app: `apps/api`
 ### Code Quality
 - ESLint
 - Prettier
+- TypeScript strict mode
 
 ## Commands
 
 Install: `pnpm install`
 Build: `pnpm -r build`
+Type check: `pnpm -r tsc --noEmit`
 Test: `pnpm -r test`
 Lint: `pnpm -r lint`
 DB migrations: `supabase db push`
@@ -87,7 +89,7 @@ apps/api/src/
 ├── agents/
 ├── integrations/
 ├── utils/
-└── app.js
+└── app.ts
 ```
 
 ## Project conventions

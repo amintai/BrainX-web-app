@@ -1,0 +1,16 @@
+{
+  "name": "@brainx/shared",
+  "version": "1.0.0",
+  "private": true,
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "lint": "eslint src --ext .ts",
+    "format:check": "prettier --check \"src/**/*.ts\""
+  },
+  "devDependencies": {
+    "typescript": "^5.5.0",
+    "zod": "^3.23.8"
+  }
+}
