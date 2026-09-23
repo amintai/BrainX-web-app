@@ -10,4 +10,10 @@ export const endpoints = {
     byId: (id: string) => `${base}/users/${id}`,
     role: (id: string) => `${base}/users/${id}/role`,
   },
+  stats: {
+    summary: `${base}/stats`,
+  },
+  onboarding: {
+    complete: `${base}/users/me/onboarding/complete`,
+  },
 };
