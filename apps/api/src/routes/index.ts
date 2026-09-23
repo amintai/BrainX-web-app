@@ -2,6 +2,7 @@ import { Router, Request, Response } from 'express';
 import { supabaseAdmin } from '../integrations/supabase';
 import { sendSuccess, sendError } from '../utils/response';
 import usersRoutes from './users.routes';
+import statsRoutes from './stats.routes';
 
 const router = Router();
 
@@ -17,8 +18,6 @@ router.get('/health', async (_req: Request, res: Response) => {
 });
 
 router.use('/users', usersRoutes);
-
-// Add domain routes below as features are built:
-// router.use('/posts', postsRoutes);
+router.use('/stats', statsRoutes);
 
 export default router;
