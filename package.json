@@ -12,12 +12,14 @@
     "prepare": "husky"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@typescript-eslint/eslint-plugin": "^8.0.0",
     "@typescript-eslint/parser": "^8.0.0",
     "eslint": "^9.0.0",
     "husky": "^9.0.0",
     "lint-staged": "^15.0.0",
     "prettier": "^3.0.0",
-    "typescript": "^5.5.0"
+    "typescript": "^5.5.0",
+    "typescript-eslint": "^8.70.1"
   }
 }

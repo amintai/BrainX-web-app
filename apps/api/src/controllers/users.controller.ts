@@ -29,3 +29,29 @@ export const listUsers = async (req: Request, res: Response, next: NextFunction)
     next(err);
   }
 };
+
+export const getUserById = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    const profile = await UsersService.getUserById(req.params.id);
+    sendSuccess(res, profile);
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const updateUserRole = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    const profile = await UsersService.updateUserRole(req.params.id, req.body.role);
+    sendSuccess(res, profile);
+  } catch (err) {
+    next(err);
+  }
+};

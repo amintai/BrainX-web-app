@@ -30,6 +30,9 @@ vi.mock('../integrations/supabase', () => ({
     }),
     auth: {
       getUser: vi.fn().mockResolvedValue({ data: { user: null }, error: null }),
+      admin: {
+        updateUserById: vi.fn().mockResolvedValue({ data: { user: {} }, error: null }),
+      },
     },
   },
 }));
