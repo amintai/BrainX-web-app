@@ -32,7 +32,17 @@ const RoleChart = ({ data, isLoading, isError }: RoleChartProps) => {
     <div className="rounded-2xl bg-white p-6 shadow-sm">
       <p className="mb-4 text-sm font-medium text-gray-500">Users by Role</p>
       {isLoading ? (
-        <div className="h-[220px] animate-pulse rounded-md bg-gray-200" />
+        <div className="flex h-[220px] items-end gap-6 px-2">
+          {[55, 35, 75].map((heightPct, i) => (
+            <div key={i} className="flex flex-1 flex-col items-center gap-2">
+              <div
+                className="w-full animate-pulse rounded-t-sm bg-gray-200"
+                style={{ height: `${heightPct}%` }}
+              />
+              <div className="h-3 w-10 animate-pulse rounded bg-gray-100" />
+            </div>
+          ))}
+        </div>
       ) : (
         <ResponsiveContainer width="100%" height={220}>
           <BarChart data={chartData} margin={{ top: 4, right: 4, left: -16, bottom: 0 }}>
