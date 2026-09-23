@@ -1,18 +1,22 @@
 import { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, User, ChevronLeft, ChevronRight, LogOut } from 'lucide-react';
+import { LayoutDashboard, User, Users, ChevronLeft, ChevronRight, LogOut } from 'lucide-react';
 import { ROUTES } from '../routes/routePaths';
 import { useAuth } from '../hooks/useAuth';
+import { useAppSelector } from '../store/hooks';
+import { ROLE_ADMIN } from '@brainx/shared';
 
 interface NavItem {
   path: string;
   label: string;
   icon: React.ReactNode;
+  adminOnly?: boolean;
 }
 
-const navItems: NavItem[] = [
+const baseNavItems: NavItem[] = [
   { path: ROUTES.dashboard, label: 'Dashboard', icon: <LayoutDashboard size={18} /> },
   { path: ROUTES.profile, label: 'Profile', icon: <User size={18} /> },
+  { path: ROUTES.users, label: 'Users', icon: <Users size={18} />, adminOnly: true },
 ];
 
 interface SidebarLayoutProps {
@@ -23,6 +27,9 @@ const SidebarLayout = ({ children }: SidebarLayoutProps) => {
   const [collapsed, setCollapsed] = useState(false);
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const role = useAppSelector((state) => state.auth.user?.app_metadata?.role as string | undefined);
+
+  const navItems = baseNavItems.filter((item) => !item.adminOnly || role === ROLE_ADMIN);
 
   const handleLogout = async () => {
     await logout();
@@ -70,9 +77,7 @@ const SidebarLayout = ({ children }: SidebarLayoutProps) => {
 
         {/* User / logout */}
         <div className="border-t border-gray-700 p-4">
-          {!collapsed && (
-            <p className="mb-2 truncate text-xs text-gray-400">{user?.email}</p>
-          )}
+          {!collapsed && <p className="mb-2 truncate text-xs text-gray-400">{user?.email}</p>}
           <button
             onClick={handleLogout}
             className="flex items-center gap-2 text-sm text-gray-400 hover:text-white transition-colors"

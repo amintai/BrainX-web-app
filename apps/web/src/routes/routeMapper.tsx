@@ -8,6 +8,7 @@ const ResetPasswordPage = lazy(() => import('../pages/auth/ResetPasswordPage'));
 const CallbackPage = lazy(() => import('../pages/auth/CallbackPage'));
 const DashboardPage = lazy(() => import('../pages/dashboard/DashboardPage'));
 const ProfilePage = lazy(() => import('../pages/profile/ProfilePage'));
+const UsersPage = lazy(() => import('../pages/users/UsersPage'));
 const NotFoundPage = lazy(() => import('../pages/NotFoundPage'));
 const UnauthorizedPage = lazy(() => import('../pages/UnauthorizedPage'));
 
@@ -35,6 +36,7 @@ export const PublicRouteList: PublicRouteConfig[] = [
 export const PrivateRouteList: PrivateRouteConfig[] = [
   { path: ROUTES.dashboard, component: DashboardPage, pageTitle: 'Dashboard', group: 'OVERVIEW' },
   { path: ROUTES.profile, component: ProfilePage, pageTitle: 'Profile', group: 'ACCOUNT' },
+  { path: ROUTES.users, component: UsersPage, pageTitle: 'Users', group: 'ADMIN' },
 ];
 
 export { NotFoundPage };

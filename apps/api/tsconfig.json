@@ -4,7 +4,8 @@
     "module": "commonjs",
     "moduleResolution": "node",
     "outDir": "dist",
-    "rootDir": "src",
+    "declaration": false,
+    "declarationMap": false,
     "types": ["node"],
     "paths": {
       "@brainx/shared": ["../../packages/shared/src/index.ts"]

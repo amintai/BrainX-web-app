@@ -22,7 +22,7 @@ export const updateMe = async (req: Request, res: Response, next: NextFunction):
 
 export const listUsers = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { page = 1, limit = 20 } = req.query as { page: number; limit: number };
+    const { page = '1', limit = '20' } = req.query as { page?: string; limit?: string };
     const result = await UsersService.listProfiles(Number(page), Number(limit));
     sendSuccess(res, result);
   } catch (err) {
