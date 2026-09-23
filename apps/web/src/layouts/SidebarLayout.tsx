@@ -39,7 +39,7 @@ const SidebarLayout = ({ children }: SidebarLayoutProps) => {
   };
 
   return (
-    <div className="flex h-screen bg-gray-100">
+    <div className="flex h-screen bg-gray-100 dark:bg-gray-950">
       {/* Sidebar */}
       <aside
         className={`flex flex-col bg-gray-900 text-white transition-all duration-300 ${
@@ -91,7 +91,9 @@ const SidebarLayout = ({ children }: SidebarLayoutProps) => {
       </aside>
 
       {/* Main content */}
-      <main className="flex-1 overflow-y-auto p-6">{children}</main>
+      <main className="flex-1 overflow-y-auto p-6 dark:bg-gray-900 dark:text-gray-100">
+        {children}
+      </main>
     </div>
   );
 };
