@@ -125,6 +125,8 @@ Required in `.env` (never committed; see `.env.example`):
 
 ```
 VITE_API_URL=
+VITE_SUPABASE_URL=
+VITE_SUPABASE_ANON_KEY=
 
 SUPABASE_URL=
 SUPABASE_ANON_KEY=
@@ -134,6 +136,12 @@ AI_PROVIDER=
 AI_MODEL=
 AI_API_KEY=
 ```
+
+`VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` are the browser-visible copies of
+`SUPABASE_URL` / `SUPABASE_ANON_KEY`, required because only `VITE_`-prefixed variables are
+exposed to the frontend by Vite. Both must always match their un-prefixed counterparts — a
+mismatch fails the frontend dev server fast with an explicit error rather than a confusing 401
+later.
 
 ## Org process
 
