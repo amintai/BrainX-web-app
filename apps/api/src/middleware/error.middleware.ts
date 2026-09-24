@@ -29,6 +29,26 @@ export const errorHandler = (
     return;
   }
 
+  // body-parser errors carry a `type` and a 4xx `status`
+  const { type } = err as Error & { type?: string };
+  if (type === 'entity.too.large') {
+    sendError(
+      res,
+      { code: 'PAYLOAD_TOO_LARGE', message: 'Request body exceeds the 1 MB limit' },
+      413,
+    );
+    return;
+  }
+  if (type === 'entity.parse.failed') {
+    sendError(res, { code: 'INVALID_JSON', message: 'Request body is not valid JSON' }, 400);
+    return;
+  }
+
+  if (err.message === 'Not allowed by CORS') {
+    sendError(res, { code: 'FORBIDDEN', message: 'Origin not allowed' }, 403);
+    return;
+  }
+
   logger.error({ requestId, method: req.method, url: req.url, err }, 'Unhandled error');
   sendError(res, { code: 'INTERNAL_ERROR', message: 'An unexpected error occurred' }, 500);
 };
